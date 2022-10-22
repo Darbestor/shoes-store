@@ -3,6 +3,8 @@
 import aiohttp
 from fastapi import FastAPI, Request
 
+from settings import settings
+
 app = FastAPI()
 
 
@@ -20,7 +22,8 @@ def initialize():
     """Startup event"""
 
     global SESSION
-    SESSION = aiohttp.ClientSession()
+    timeout = aiohttp.ClientTimeout(settings.GATEWAY_TIMEOUT)
+    SESSION = aiohttp.ClientSession(timeout=timeout)
 
 
 @app.on_event("shutdown")
