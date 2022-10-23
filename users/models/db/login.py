@@ -24,4 +24,4 @@ class Login(Base):
     passphrase = Column(LargeBinary, nullable=False)
 
     # one to one
-    profile: Profile = relationship("Login", back_populates="login", uselist=False)
+    profile: Profile = relationship("Profile", back_populates="login", uselist=False)

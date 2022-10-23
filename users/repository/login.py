@@ -6,6 +6,7 @@ from sqlalchemy.orm import sessionmaker
 
 from config.db import get_db_connection
 from models.db import Login
+from models.requests.login import LoginReq
 
 
 class LoginRepository:
@@ -29,9 +30,9 @@ class LoginRepository:
         try:
             async with self.session_factory() as session:  # type: ignore
                 async with session.begin():
-                    login = Login(**details)
-                    await session.add(login)
-
+                    passphrase = bytes(details["password"], encoding="utf-8")
+                    login = Login(username=details["username"], passphrase=passphrase)
+                    session.add(login)
             return login.id
         except Exception as ex:
             print(ex)
