@@ -21,4 +21,4 @@ class Profile(Base):
     modified_date = Column(DateTime(timezone=False), nullable=False)
 
     # many to one, but has to be only one login associated
-    login = relationship("Login", back_populates="profile")
+    login: Login = relationship("Login", back_populates="profile")

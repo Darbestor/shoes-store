@@ -1,5 +1,6 @@
 """Repository for interaction with login table in database"""
 
+from uuid import UUID
 from fastapi import Depends
 from sqlalchemy.orm import sessionmaker
 
@@ -15,7 +16,7 @@ class LoginRepository:
     ) -> None:
         self.session_factory: sessionmaker = session_factory
 
-    async def add_login(self, details: dict) -> bool:
+    async def add_login(self, details: dict) -> UUID | None:
         """Insert new Login entry
 
         Args:
@@ -30,7 +31,8 @@ class LoginRepository:
                 async with session.begin():
                     login = Login(**details)
                     await session.add(login)
+
+            return login.id
         except Exception as ex:
             print(ex)
-            return False
-        return True
+            return None

@@ -5,6 +5,7 @@ from sqlalchemy import Column, String, LargeBinary
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from config.db import Base
+from .profile import Profile
 
 
 class Login(Base):
@@ -17,4 +18,4 @@ class Login(Base):
     passphrase = Column(LargeBinary)
 
     # one to one
-    profile = relationship("Login", back_populates="login", uselist=False)
+    profile: Profile = relationship("Login", back_populates="login", uselist=False)
