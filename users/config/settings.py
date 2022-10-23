@@ -1,17 +1,22 @@
 """Service settings"""
 
-import os
 from pydantic import BaseSettings
 
 
 class Settings(BaseSettings):
     """Service settings"""
 
-    DB_USERNAME: str | None = os.environ.get("DB_USERNAME")
-    DB_PASSWORD: str | None = os.environ.get("DB_PASSWORD")
-    DB_DATABASE: str | None = os.environ.get("DB_DATABASE")
-    DB_HOST: str | None = os.environ.get("DB_HOST", "localhost")
-    DB_PORT: int | None = int(os.environ.get("DB_PORT", 5432))
+    db_username: str = ""
+    db_password: str = ""
+    db_database: str = ""
+    db_host: str = ""
+    db_port: int = 5432
+
+    class Config:
+        """settings configuration"""
+
+        env_file = ".env"
+        env_file_encoding = "utf-8"
 
 
 settings = Settings()
