@@ -4,11 +4,10 @@ from uuid import uuid4
 from sqlalchemy import Column, String, LargeBinary
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-from config.db import orm_mapper
+from config.db import Base
 
 
-@orm_mapper.mapped
-class Login:
+class Login(Base):
     """Login table"""
 
     __tablename__ = "login"

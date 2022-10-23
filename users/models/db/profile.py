@@ -3,12 +3,11 @@
 from sqlalchemy import Column, String, ForeignKey, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-from config.db import orm_mapper
+from config.db import Base
 from .login import Login
 
 
-@orm_mapper.mapped
-class Profile:
+class Profile(Base):
     """Profile table"""
 
     __tablename__ = "profile"
