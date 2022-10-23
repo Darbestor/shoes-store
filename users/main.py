@@ -1,3 +1,5 @@
+"""Entry point"""
+
 from fastapi import FastAPI
 
 
