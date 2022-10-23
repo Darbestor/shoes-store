@@ -1,11 +1,17 @@
 """Login model"""
 
+from __future__ import annotations
+from typing import TYPE_CHECKING
 from uuid import uuid4
 from sqlalchemy import Column, String, LargeBinary
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
+
 from config.db import Base
-from .profile import Profile
+
+
+if TYPE_CHECKING:
+    from . import Profile
 
 
 class Login(Base):

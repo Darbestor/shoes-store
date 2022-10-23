@@ -4,7 +4,7 @@ from sqlalchemy import Column, String, ForeignKey, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from config.db import Base
-from .login import Login
+from . import Login
 
 
 class Profile(Base):
