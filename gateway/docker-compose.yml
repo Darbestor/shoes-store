@@ -1,0 +1,15 @@
+services:
+  gateway_postgres:
+    image: postgres:14.5-alpine
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=${GATEWAY_DB_PASSWORD}
+      - POSTGRES_USER=${GATEWAY_DB_USERNAME}
+      - POSTGRES_DB=${GATEWAY_DB_DATABASE}
+    volumes:
+      - db_gateway:/var/lib/postgresql/data
+    ports:
+      - ${GATEWAY_DB_PORT}:5432
+
+volumes:
+  db_gateway:
