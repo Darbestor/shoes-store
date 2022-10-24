@@ -18,7 +18,7 @@ class LoginRepository:
     ) -> None:
         self.session_factory: sessionmaker = session_factory
 
-    async def add_login(self, details: dict) -> UUID | None:
+    async def add_login(self, details: dict) -> UUID:
         """Insert new Login entry
 
         Args:
@@ -28,16 +28,12 @@ class LoginRepository:
             bool: transaction status. True if inserted, False on error
         """
 
-        try:
-            async with self.session_factory() as session:  # type: ignore
-                async with session.begin():
-                    passphrase = bytes(details["password"], encoding="utf-8")
-                    login = Login(username=details["username"], passphrase=passphrase)
-                    session.add(login)
-            return login.id
-        except Exception as ex:
-            print(ex)
-            return None
+        async with self.session_factory() as session:  # type: ignore
+            async with session.begin():
+                passphrase = bytes(details["password"], encoding="utf-8")
+                login = Login(username=details["username"], passphrase=passphrase)
+                session.add(login)
+        return login.id  # type: ignore
 
     async def get_logins(self) -> list[Login]:
         """Get all logins.

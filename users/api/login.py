@@ -8,12 +8,18 @@ from fastapi.responses import Response
 from models.requests import LoginReq
 from models.responses.login import LoginResponse
 from repository.login import LoginRepository
+from services.login import LoginService
 
 router = APIRouter(prefix="/login", tags=["login"])
 
 
+@router.post("/authorize")
+async def authorize_user(req: LoginReq):
+    pass
+
+
 @router.post("/", status_code=201, response_model=LoginResponse)
-async def register_user(req: LoginReq, repo: LoginRepository = Depends()):
+async def register_user(req: LoginReq, service: LoginService = Depends()):
     """Add new user
 
     Args:
@@ -24,12 +30,7 @@ async def register_user(req: LoginReq, repo: LoginRepository = Depends()):
         LoginReq: Login response with user id
     """
 
-    details = req.dict(exclude_unset=True)
-    login_id = await repo.add_login(details)
-    if login_id is not None:
-        response = LoginResponse(id=login_id, username=req.username)
-        return response
-    raise HTTPException(status_code=500, detail="Fail to register user")
+    return await service.add_login(req)
 
 
 @router.get("/", response_model=list[LoginResponse])
