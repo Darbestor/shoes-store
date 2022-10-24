@@ -3,10 +3,11 @@
 from uuid import UUID
 from fastapi import Depends
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.future import select
+
 
 from config.db import get_db_connection
 from models.db import Login
-from models.requests.login import LoginReq
 
 
 class LoginRepository:
@@ -37,3 +38,22 @@ class LoginRepository:
         except Exception as ex:
             print(ex)
             return None
+
+    async def get_logins(self) -> list[Login]:
+        """Get all logins.
+        Ordered by username
+
+        Returns:
+            list[Login]: list of logins
+        """
+
+        async with self.session_factory() as session:  # type: ignore
+            result = await session.execute(select(Login).order_by(Login.username))
+            return result.scalars()
+
+    async def get_login_by_id(self, login_id: UUID) -> Login | None:
+        """Get login by id."""
+
+        async with self.session_factory() as session:  # type: ignore
+            result = await session.execute(select(Login).where(Login.id == login_id))
+            return result.scalars().one_or_none()
