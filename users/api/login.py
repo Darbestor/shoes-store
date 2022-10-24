@@ -2,7 +2,7 @@
 
 from uuid import UUID
 from fastapi import APIRouter, Depends, status
-from fastapi.responses import Response
+from fastapi.responses import Response, JSONResponse
 
 
 from models.requests import LoginReq
@@ -13,9 +13,24 @@ from services.login import LoginService
 router = APIRouter(prefix="/login", tags=["login"])
 
 
-@router.post("/authorize")
-async def authorize_user(req: LoginReq):
-    pass
+@router.post("/authorize", response_model=UUID)
+async def authorize_user(req: LoginReq, service: LoginService = Depends()):
+    """Authorize user
+
+    Args:
+        req (LoginReq): request payload
+
+    Returns:
+        UUID: user id if authorization successful
+    """
+
+    login_id = await service.authorize(req)
+    if login_id is not None:
+        return login_id
+    return JSONResponse(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        content={"message": "Wrong username or password"},
+    )
 
 
 @router.post("/", status_code=201, response_model=LoginResponse)
