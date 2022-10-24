@@ -30,8 +30,7 @@ class LoginRepository:
 
         async with self.session_factory() as session:  # type: ignore
             async with session.begin():
-                passphrase = bytes(details["password"], encoding="utf-8")
-                login = Login(username=details["username"], passphrase=passphrase)
+                login = Login(**details)
                 session.add(login)
         return login.id  # type: ignore
 
@@ -52,4 +51,13 @@ class LoginRepository:
 
         async with self.session_factory() as session:  # type: ignore
             result = await session.execute(select(Login).where(Login.id == login_id))
+            return result.scalars().one_or_none()
+
+    async def get_login_by_username(self, username: str) -> Login | None:
+        """Get login by username."""
+
+        async with self.session_factory() as session:  # type: ignore
+            result = await session.execute(
+                select(Login).where(Login.username == username)
+            )
             return result.scalars().one_or_none()

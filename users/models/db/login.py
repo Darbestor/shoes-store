@@ -20,8 +20,8 @@ class Login(Base):
     __tablename__ = "login"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
-    username = Column(String, unique=True, index=True, nullable=False)
-    passphrase = Column(LargeBinary, nullable=False)
+    username: str = Column(String, unique=True, index=True, nullable=False)
+    passphrase: bytes = Column(LargeBinary, nullable=False)
 
     # one to one
     profile: Profile = relationship("Profile", back_populates="login", uselist=False)
