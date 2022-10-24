@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     db_database: str = ""
     db_host: str = ""
     db_port: int = 5432
+    timeout: float = 59.0
+    users_service: str = ""
 
     class Config:
         """settings configuration"""
