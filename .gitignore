@@ -103,6 +103,7 @@ celerybeat.pid
 
 # Environments
 .env
+.env_local
 .venv
 env/
 venv/
@@ -128,5 +129,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# Poetry
+poetry.lock
+
 # Vscode
-.vscode/*~
+*/.vscode/*

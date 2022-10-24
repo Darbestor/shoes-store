@@ -1,0 +1,14 @@
+services:
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=1234
+    ports:
+      - 8080:80
+    volumes:
+      - pgadmin_config:/pgadmin4/servers.json
+
+volumes:
+  pgadmin_config:
