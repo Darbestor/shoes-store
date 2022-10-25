@@ -1,34 +1,24 @@
 """Entry point"""
 
-import aiohttp
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 
-from settings import settings
+from config.settings import settings
+from api import users
+from network import init_session, destroy_session
 
 app = FastAPI()
-
-
-@app.middleware("http")
-async def gateway(request: Request, call_next):
-    """Gateway"""
-    response = await call_next(request)
-
-
-SESSION: aiohttp.ClientSession | None = None
+app.include_router(users.router)
 
 
 @app.on_event("startup")
 def initialize():
     """Startup event"""
 
-    global SESSION
-    timeout = aiohttp.ClientTimeout(settings.GATEWAY_TIMEOUT)
-    SESSION = aiohttp.ClientSession(timeout=timeout)
+    init_session(settings.timeout)
 
 
 @app.on_event("shutdown")
 async def destroy():
     """Shutdown event"""
 
-    if SESSION is not None:
-        await SESSION.close()
+    await destroy_session()
