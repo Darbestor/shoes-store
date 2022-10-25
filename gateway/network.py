@@ -1,6 +1,20 @@
 """External requests methods"""
 
-from main import SESSION
+import aiohttp
+
+
+SESSION: aiohttp.ClientSession
+
+
+def init_session(timeout):
+    global SESSION
+    timeout_client = aiohttp.ClientTimeout(timeout)
+    SESSION = aiohttp.ClientSession(timeout=timeout_client)
+
+
+async def destroy_session():
+    if SESSION is not None:
+        await SESSION.close()
 
 
 async def make_request(

@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     db_host: str = ""
     db_port: int = 5432
     timeout: float = 59.0
-    users_service: str = ""
+    users_service_url: str = ""
 
     class Config:
         """settings configuration"""
