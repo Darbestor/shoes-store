@@ -2,7 +2,7 @@
 
 from uuid import UUID, uuid4
 from fastapi import Depends
-from models.db.catalog import Details, Model
+from models.db.catalog import Details, Model, Size
 
 from models.requests.model import CreateModelReq
 from repository.model import ModelRepository
@@ -24,18 +24,17 @@ class ModelService:
         Returns:
             UUID: model identifier
         """
-
         model = Model(
             id=uuid4(),
             name=payload.name,
             description=payload.description,
             price=0,
-            sizes={payload.size, payload.quantity},
+            available_sizes=[Size(size=payload.size, quantity=payload.quantity)],
             details=Details(
                 sport_type=payload.sport_type,
                 company=payload.company,
                 collection=payload.collection,
-                color=payload.collection,
+                color=payload.color,
                 gender=payload.gender,
             ),
         )

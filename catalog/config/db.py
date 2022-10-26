@@ -12,8 +12,7 @@ async def init_db():
 
     # Create Motor client
     client = AsyncIOMotorClient(
-        f"mongodb://{settings.db_username}:{settings.db_password}@ \
-{settings.db_host}:{settings.db_port}"
+        f"mongodb://{settings.db_username}:{settings.db_password}@{settings.db_host}:{settings.db_port}"
     )
 
     # Initialize beanie with the Product document class and a database

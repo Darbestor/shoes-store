@@ -21,13 +21,18 @@ class Details(BaseModel):
     gender: Gender
 
 
+class Size(BaseModel):
+    size: float
+    quantity: int
+
+
 class Model(Document):
     """Mongodb model"""
 
     id: UUID = Field(default_factory=uuid4)  # type: ignore
     name: str
     description: str
-    sizes: dict[float, int]
+    available_sizes: list[Size]
     price: float
     details: Details
 

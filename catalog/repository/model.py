@@ -25,13 +25,20 @@ class ModelRepository:
             Model.details.gender == model.details.gender,
         )
         if existing_model is not None:
-            size, quantity = model.sizes.popitem()
-            if size not in existing_model.sizes:
-                existing_model.sizes[size] = 0
-            existing_model.sizes[size] += quantity
+            new_size = model.available_sizes.pop()
+            available_size = next(
+                (x for x in existing_model.available_sizes if x.size == new_size.size),
+                None,
+            )
+            if available_size is None:
+                existing_model.available_sizes.append(new_size)
+            else:
+                available_size.quantity += new_size.quantity
             await existing_model.save()
             return existing_model.id
 
-        model.id = uuid4()
-        await model.insert_one()
+        await model.insert()
         return model.id
+
+
+# fd6f5a30-68b3-4c00-bd93-c6829cb921ca
