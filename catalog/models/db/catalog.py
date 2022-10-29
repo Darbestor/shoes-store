@@ -25,8 +25,7 @@ class Warehouse(Document):
     """Models management storage"""
 
     model_id: UUID  # type: ignore
-    size: float
-    quantity: int
+    storage: dict[float, int]
 
 
 class Model(Document):

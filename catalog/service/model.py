@@ -2,7 +2,7 @@
 
 from uuid import UUID, uuid4
 from fastapi import Depends
-from models.db.catalog import Details, Model, Size
+from models.db.catalog import Details, Model, Warehouse
 
 from models.requests.model import CreateModelReq
 from repository.model import ModelRepository
@@ -29,7 +29,6 @@ class ModelService:
             name=payload.name,
             description=payload.description,
             price=0,
-            available_sizes=[Size(size=payload.size, quantity=payload.quantity)],
             details=Details(
                 sport_type=payload.sport_type,
                 company=payload.company,
@@ -38,4 +37,5 @@ class ModelService:
                 gender=payload.gender,
             ),
         )
+        model.storage = Warehouse(model_id=model.id, storage={})  # type: ignore
         return await self.repo.add_model(model)

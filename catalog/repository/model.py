@@ -3,8 +3,9 @@
 from typing import Any, Mapping
 from uuid import UUID
 
+from beanie import WriteRules
+
 from exceptions import DBException
-from models.common.models_filter import ModelFilter
 from models.db.catalog import Model
 
 
@@ -29,7 +30,7 @@ class ModelRepository:
         )
         if existing_model is not None:
             raise DBException("Model with given parameters already exists")
-        await model.insert()
+        await model.insert(link_rule=WriteRules.WRITE)
         return model.id
 
     async def update_price(self, model_id: UUID, new_price: float):
