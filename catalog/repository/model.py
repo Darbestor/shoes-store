@@ -30,20 +30,6 @@ class ModelRepository:
         await model.insert()
         return model.id
 
-    async def get_models(self, limit: int | None = None, offset: int = 0):
-        """Retrive all models using batches if needed
-
-        Args:
-            limit (int, optional): batch size. Defaults to None.
-            offset (int, optional): skip quantity. Defaults to 0.
-        """
-
-        return await Model.all(
-            skip=offset,
-            limit=limit,
-            sort="+name",
-        ).to_list()
-
     async def update_price(self, model_id: UUID, new_price: float):
         """Set new price for model
 
@@ -97,6 +83,31 @@ class ModelRepository:
 
         await model.save()
 
+    async def delete_model(self, model_id: UUID):
+        """delete model
+
+        Args:
+            model_id (UUID): model identifier
+        """
+        model = await self.get_model_by_id(model_id)
+        if model is None:
+            raise DBException(f"Model {model_id} not found")
+        await model.delete()
+
+    async def get_models(self, limit: int | None = None, offset: int = 0):
+        """Retrive all models using batches if needed
+
+        Args:
+            limit (int, optional): batch size. Defaults to None.
+            offset (int, optional): skip quantity. Defaults to 0.
+        """
+
+        return await Model.all(
+            skip=offset,
+            limit=limit,
+            sort="+name",
+        ).to_list()
+
     async def get_model_by_id(self, model_id: UUID) -> Model | None:
         """Get model by id
 
@@ -109,10 +120,6 @@ class ModelRepository:
         return await Model.find(Model.id == model_id).first_or_none()
 
 
-# TODO update (size, entity)
-# TODO update model
-# TODO delete model
-# TODO get by id full info
 # TODO search by name
 # TODO (optional) filter by color, gender, company, sport_type, price
 
