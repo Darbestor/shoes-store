@@ -1,7 +1,7 @@
 """Catalog document definition"""
 
 from uuid import UUID, uuid4
-from beanie import Document
+from beanie import Document, Link
 from pydantic import BaseModel, Field
 from pymongo import IndexModel
 import pymongo
@@ -21,7 +21,10 @@ class Details(BaseModel):
     gender: Gender
 
 
-class Size(BaseModel):
+class Warehouse(Document):
+    """Models management storage"""
+
+    model_id: UUID  # type: ignore
     size: float
     quantity: int
 
@@ -32,9 +35,9 @@ class Model(Document):
     id: UUID = Field(default_factory=uuid4)  # type: ignore
     name: str
     description: str
-    available_sizes: list[Size]
     price: float
     details: Details
+    storage: Link[Warehouse]
 
     class Settings:
         """settings"""
