@@ -12,8 +12,6 @@ class CreateModelReq(BaseModel):
 
     name: str
     description: str
-    size: float
-    quantity: int
     sport_type: SportType
     company: str
     collection: str
