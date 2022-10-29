@@ -3,6 +3,7 @@
 from uuid import UUID, uuid4
 from math import isclose
 from fastapi import Depends
+from varname import nameof
 
 from exceptions import ValidationException
 from models.db.catalog import Details, Model, Warehouse
@@ -43,6 +44,23 @@ class ModelService:
         )
         return await self.repo.add_model(model)
 
+    async def update_model(self, model_id: UUID, payload: CreateModelReq) -> Model:
+        """Update model information
+
+        Args:
+            model_id (UUID): model identifier
+            payload (CreateModelReq): new details
+
+        Returns:
+            Model: Updated model
+        """
+        details = payload.dict(exclude_unset=True)
+        name = details.pop(nameof(payload.name))
+        description = details.pop(nameof(payload.description))
+        return await self.repo.update_model(
+            model_id, name=name, desciption=description, details=details
+        )
+
     async def set_price(self, model_id: UUID, price: float):
         """Update model's price
 
@@ -68,5 +86,24 @@ class ModelService:
             raise ValidationException("Limit or offset cannot be less than 0")
         return await self.repo.get_models(limit, offset)
 
+    async def get_model_by_id(self, model_id: UUID) -> Model | None:
+        """Get model by id
 
-# update_price update_model delete_model get_models get_model_by_id get_models_by_filter
+        Args:
+            model_id (UUID): model identifier
+
+        Returns:
+            Model | None: Model if found or None
+        """
+        return await self.repo.get_model_by_id(model_id)
+
+    async def delete_model(self, model_id: UUID):
+        """Delete model by id
+
+        Args:
+            model_id (UUID): model identifier
+        """
+        await self.repo.delete_model(model_id)
+
+
+# update_model get_models_by_filter
