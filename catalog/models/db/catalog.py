@@ -27,6 +27,11 @@ class Warehouse(Document):
     model_id: UUID  # type: ignore
     storage: dict[float, int]
 
+    class Settings:
+        """settings"""
+
+        name = "warehouse"
+
 
 class Model(Document):
     """Mongodb model"""
