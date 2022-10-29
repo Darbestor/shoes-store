@@ -6,6 +6,6 @@ from enum import IntEnum
 class Gender(IntEnum):
     """Gender"""
 
-    M = 0
-    F = 1
-    U = 2
+    MALE = 0
+    FEMALE = 1
+    UNIFORM = 2

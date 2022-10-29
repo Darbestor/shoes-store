@@ -7,7 +7,7 @@ from varname import nameof
 
 from exceptions import ValidationException
 from models.db.catalog import Details, Model, Warehouse
-from models.requests.model import CreateModelReq
+from models.requests.model import ModelReq
 from repository.model import ModelRepository
 
 
@@ -17,12 +17,12 @@ class ModelService:
     def __init__(self, repo: ModelRepository = Depends()) -> None:
         self.repo = repo
 
-    async def create_model(self, payload: CreateModelReq) -> Model:
+    async def create_model(self, payload: ModelReq) -> Model:
         """Create new model.
         If model already exist, then update quantity for size
 
         Args:
-            payload (CreateModelReq): request
+            payload (ModelReq): request
 
         Returns:
             UUID: model identifier
@@ -44,12 +44,12 @@ class ModelService:
         )
         return await self.repo.add_model(model)
 
-    async def update_model(self, model_id: UUID, payload: CreateModelReq) -> Model:
+    async def update_model(self, model_id: UUID, payload: ModelReq) -> Model:
         """Update model information
 
         Args:
             model_id (UUID): model identifier
-            payload (CreateModelReq): new details
+            payload (ModelReq): new details
 
         Returns:
             Model: Updated model
@@ -71,6 +71,14 @@ class ModelService:
         if isclose(0, price) or price < 0:
             raise ValidationException("price cannot be less than or equal to zero")
         await self.repo.update_price(model_id, price)
+
+    async def delete_model(self, model_id: UUID):
+        """Delete model by id
+
+        Args:
+            model_id (UUID): model identifier
+        """
+        await self.repo.delete_model(model_id)
 
     async def get_models(self, limit: int = None, offset: int = 0) -> list[Model]:
         """Get models ordered by name
@@ -97,13 +105,5 @@ class ModelService:
         """
         return await self.repo.get_model_by_id(model_id)
 
-    async def delete_model(self, model_id: UUID):
-        """Delete model by id
 
-        Args:
-            model_id (UUID): model identifier
-        """
-        await self.repo.delete_model(model_id)
-
-
-# update_model get_models_by_filter
+# TODO get_models_by_filter

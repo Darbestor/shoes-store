@@ -3,7 +3,7 @@
 from typing import Any, Mapping
 from uuid import UUID
 
-from beanie import WriteRules
+from beanie import DeleteRules, WriteRules
 
 from exceptions import DBException
 from models.db.catalog import Model
@@ -66,7 +66,7 @@ class ModelRepository:
             raise DBException(f"Model {model_id} not found")
         if details is not None:
             for key, value in details.items():
-                setattr(model, key, value)
+                setattr(model.details, key, value)
 
         if name is not None and name != model.name:
             if (
@@ -96,7 +96,7 @@ class ModelRepository:
         model = await self.get_model_by_id(model_id)
         if model is None:
             raise DBException(f"Model {model_id} not found")
-        await model.delete()
+        await model.delete(link_rule=DeleteRules.DELETE_LINKS)
 
     async def get_models(
         self, limit: int | None = None, offset: int = 0
