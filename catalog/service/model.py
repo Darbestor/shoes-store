@@ -15,7 +15,7 @@ class ModelService:
     """Facade between db and request for Model document"""
 
     def __init__(self, repo: ModelRepository = Depends()) -> None:
-        self.repo = repo
+        self.__repo = repo
 
     async def create_model(self, payload: ModelReq) -> Model:
         """Create new model.
@@ -42,7 +42,7 @@ class ModelService:
                 gender=payload.gender,
             ),
         )
-        return await self.repo.add_model(model)
+        return await self.__repo.add_model(model)
 
     async def update_model(self, model_id: UUID, payload: ModelReq) -> Model:
         """Update model information
@@ -57,7 +57,7 @@ class ModelService:
         details = payload.dict(exclude_unset=True)
         name = details.pop(nameof(payload.name))
         description = details.pop(nameof(payload.description))
-        return await self.repo.update_model(
+        return await self.__repo.update_model(
             model_id, name=name, desciption=description, details=details
         )
 
@@ -70,7 +70,7 @@ class ModelService:
         """
         if isclose(0, price) or price < 0:
             raise ValidationException("price cannot be less than or equal to zero")
-        await self.repo.update_price(model_id, price)
+        await self.__repo.update_price(model_id, price)
 
     async def delete_model(self, model_id: UUID):
         """Delete model by id
@@ -78,7 +78,7 @@ class ModelService:
         Args:
             model_id (UUID): model identifier
         """
-        await self.repo.delete_model(model_id)
+        await self.__repo.delete_model(model_id)
 
     async def get_models(self, limit: int = None, offset: int = 0) -> list[Model]:
         """Get models ordered by name
@@ -92,7 +92,7 @@ class ModelService:
         """
         if (limit is not None and limit < 0) or offset < 0:
             raise ValidationException("Limit or offset cannot be less than 0")
-        return await self.repo.get_models(limit, offset)
+        return await self.__repo.get_models(limit, offset)
 
     async def get_model_by_id(self, model_id: UUID) -> Model | None:
         """Get model by id
@@ -103,7 +103,7 @@ class ModelService:
         Returns:
             Model | None: Model if found or None
         """
-        return await self.repo.get_model_by_id(model_id)
+        return await self.__repo.get_model_by_id(model_id)
 
 
 # TODO get_models_by_filter

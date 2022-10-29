@@ -9,7 +9,7 @@ class WarehouseService:
     """Facade between db and request for shoes warehouse"""
 
     def __init__(self, repo: WarehouseRepository = Depends()) -> None:
-        self.repo = repo
+        self.__repo = repo
 
     async def update_storage(self, model_id: UUID, payload: WarehouseReq):
-        await self.repo.update_storage(model_id, payload.size, payload.quantity)
+        await self.__repo.update_storage(model_id, payload.size, payload.quantity)
