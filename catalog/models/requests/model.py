@@ -1,5 +1,6 @@
 """Request models for Model document"""
 
+from typing import Union
 from pydantic import BaseModel
 
 from models.common.color import Color
@@ -17,3 +18,16 @@ class CreateModelReq(BaseModel):
     collection: str
     color: Color
     gender: Gender
+
+
+class ModelFilterReq(BaseModel):
+    """Filtering models"""
+
+    name: str | None
+    size: float | None
+    sport_type: SportType | None
+    company: str | None
+    collection: str | None
+    color: Color | None
+    gender: Gender | None
+    price_range: Union[float, float]

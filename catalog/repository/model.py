@@ -12,7 +12,7 @@ from models.db.catalog import Model
 class ModelRepository:
     """Repository"""
 
-    async def add_model(self, model: Model) -> UUID:
+    async def add_model(self, model: Model) -> Model:
         """Create new model
 
         Args:
@@ -31,7 +31,7 @@ class ModelRepository:
         if existing_model is not None:
             raise DBException("Model with given parameters already exists")
         await model.insert(link_rule=WriteRules.WRITE)
-        return model.id
+        return model
 
     async def update_price(self, model_id: UUID, new_price: float):
         """Set new price for model
@@ -52,7 +52,7 @@ class ModelRepository:
         name: str | None = None,
         desciption: str | None = None,
         details: dict | None = None,
-    ):
+    ) -> Model:
         """update model fields
 
         Args:
@@ -68,7 +68,7 @@ class ModelRepository:
             for key, value in details.items():
                 setattr(model, key, value)
 
-        if name is not None:
+        if name is not None and name != model.name:
             if (
                 await Model.find(
                     Model.name == name,
@@ -85,6 +85,7 @@ class ModelRepository:
             model.description = desciption
 
         await model.save()
+        return model
 
     async def delete_model(self, model_id: UUID):
         """delete model
@@ -97,7 +98,9 @@ class ModelRepository:
             raise DBException(f"Model {model_id} not found")
         await model.delete()
 
-    async def get_models(self, limit: int | None = None, offset: int = 0):
+    async def get_models(
+        self, limit: int | None = None, offset: int = 0
+    ) -> list[Model]:
         """Retrive all models using batches if needed
 
         Args:
@@ -122,7 +125,7 @@ class ModelRepository:
         """
         return await Model.find(Model.id == model_id).first_or_none()
 
-    async def get_models_by_filter(self, *args: Mapping[str, Any]):
+    async def get_models_by_filter(self, *args: Mapping[str, Any]) -> list[Model]:
         """Get models that fit search criteria
 
         Args:
