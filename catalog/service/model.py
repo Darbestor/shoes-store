@@ -24,11 +24,13 @@ class ModelService:
         Returns:
             UUID: model identifier
         """
+        model_id = uuid4()
         model = Model(
-            id=uuid4(),
+            id=model_id,
             name=payload.name,
             description=payload.description,
             price=0,
+            storage=Warehouse(model_id=model_id, storage={}),  # type: ignore
             details=Details(
                 sport_type=payload.sport_type,
                 company=payload.company,
@@ -37,5 +39,4 @@ class ModelService:
                 gender=payload.gender,
             ),
         )
-        model.storage = Warehouse(model_id=model.id, storage={})  # type: ignore
         return await self.repo.add_model(model)
