@@ -8,7 +8,7 @@ from models.requests.model import ModelReq
 from service.model import ModelService
 
 
-router = APIRouter(prefix="/model")
+router = APIRouter(prefix="/model", tags=["model"])
 
 
 @router.post("/", response_model=Model, status_code=201)

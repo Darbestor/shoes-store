@@ -12,4 +12,6 @@ class WarehouseService:
         self.__repo = repo
 
     async def update_storage(self, model_id: UUID, payload: WarehouseReq):
-        await self.__repo.update_storage(model_id, payload.size, payload.quantity)
+        return await self.__repo.update_storage(
+            model_id, payload.size, payload.quantity
+        )

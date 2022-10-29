@@ -1,5 +1,6 @@
 """Catalog document definition"""
 
+from typing import Union
 from uuid import UUID, uuid4
 from beanie import Document, Link
 from pydantic import BaseModel, Field
@@ -21,11 +22,16 @@ class Details(BaseModel):
     gender: Gender
 
 
+class Storage(BaseModel):
+    size: int
+    quantity: int
+
+
 class Warehouse(Document):
     """Models management storage"""
 
     model_id: UUID  # type: ignore
-    storage: dict[float, int]
+    storage: list[Storage]
 
     class Settings:
         """settings"""

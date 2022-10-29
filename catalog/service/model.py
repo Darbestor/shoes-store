@@ -33,7 +33,7 @@ class ModelService:
             name=payload.name,
             description=payload.description,
             price=0,
-            storage=Warehouse(model_id=model_id, storage={}),  # type: ignore
+            storage=Warehouse(model_id=model_id, storage=[]),  # type: ignore
             details=Details(
                 sport_type=payload.sport_type,
                 company=payload.company,
