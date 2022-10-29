@@ -1,8 +1,10 @@
 """Manipulation of Model documents in database"""
 
+from typing import Any, Mapping
 from uuid import UUID
 
 from exceptions import DBException
+from models.common.models_filter import ModelFilter
 from models.db.catalog import Model
 
 
@@ -119,8 +121,11 @@ class ModelRepository:
         """
         return await Model.find(Model.id == model_id).first_or_none()
 
+    async def get_models_by_filter(self, *args: Mapping[str, Any]):
+        """Get models that fit search criteria
 
-# TODO search by name
-# TODO (optional) filter by color, gender, company, sport_type, price
+        Args:
+            filter (ModelFilter): filters
+        """
 
-# fd6f5a30-68b3-4c00-bd93-c6829cb921ca
+        return await Model.find(*args).sort("+name").to_list()
