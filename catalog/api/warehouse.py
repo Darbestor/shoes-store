@@ -1,5 +1,6 @@
 from uuid import UUID
 from fastapi import APIRouter, Depends
+from models.db.catalog import Warehouse
 
 from models.requests.warehouse import WarehouseReq
 from service.warehouse import WarehouseService
@@ -8,7 +9,7 @@ from service.warehouse import WarehouseService
 router = APIRouter(prefix="/warehouse", tags=["warehouse"])
 
 
-@router.post("/{model_id}")
+@router.post("/{model_id}", response_model=Warehouse, status_code=201)
 async def set_storage(
     model_id: UUID,
     payload: WarehouseReq = Depends(WarehouseReq.as_form),
@@ -25,6 +26,6 @@ async def update_storage(
     await service.change_storage(model_id, payload)
 
 
-@router.get("/{model_id}")
+@router.get("/{model_id}", response_model=Warehouse)
 async def get_warehouse(model_id: UUID, service: WarehouseService = Depends()):
     return await service.get_warehouse(model_id)

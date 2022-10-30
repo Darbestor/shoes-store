@@ -20,8 +20,6 @@ class WarehouseRepository:
             Warehouse: updated warehouse for model
         """
         warehouse = await self.get_warehouse(model_id)
-        if warehouse is None:
-            raise DBException(f"Storage for model {model_id} not found")
         storage = next((s for s in warehouse.storage if s.size == size), None)
         if storage is None:
             storage = Storage(size=size, quantity=quantity)
@@ -42,15 +40,11 @@ class WarehouseRepository:
                 Negative number - take models from storage.
 
             Raises:
-            DBException:
-                Storage not found
             ValueException:
                 Number of pairs in storage is less than quantity to take.
                 Size is not found
         """
         warehouse = await self.get_warehouse(model_id)
-        if warehouse is None:
-            raise DBException(f"Storage for model {model_id} not found")
         storage = next((s for s in warehouse.storage if s.size == size), None)
         if storage is None:
             raise ValueError("size", f"Size for model {model_id} not found")
@@ -61,5 +55,8 @@ class WarehouseRepository:
             )
         await warehouse.save()
 
-    async def get_warehouse(self, model_id: UUID):
-        return await Warehouse.find(Warehouse.model_id == model_id).first_or_none()
+    async def get_warehouse(self, model_id: UUID) -> Warehouse:
+        warehouse = await Warehouse.find(Warehouse.model_id == model_id).first_or_none()
+        if warehouse is None:
+            raise DBException(f"Storage for model {model_id} not found")
+        return warehouse
