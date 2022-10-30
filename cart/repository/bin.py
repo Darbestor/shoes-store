@@ -25,12 +25,12 @@ class BinRepository:
             Bin: updated bin
         """
         if quantity < 1:
-            raise ValueError("Quantity must be greater than 0")
+            raise ValueError("quantity", "Quantity must be greater than 0")
 
         bin_ = await Bin.find(Bin.id == user_id).first_or_none()
 
         if bin_ is None:
-            items = list(Item(item_id=item_id, quantity=quantity))
+            items = [Item(item_id=item_id, quantity=quantity)]
             bin_ = Bin(id=user_id, items=items)
         else:
             item = next((x for x in bin_.items if x.item_id == item_id), None)
@@ -68,9 +68,18 @@ class BinRepository:
         await bin_.save()
         return bin_
 
-    async def remove_bin(self, user_id: UUID):
+    async def remove_bin(self, user_id: UUID) -> Bin:
+        """Clear bin for user
+
+        Args:
+            user_id (UUID): user identifier
+
+        Returns:
+            Bin: Removed bin information
+        """
         bin_ = await self.get_bin(user_id)
         await bin_.delete()
+        return bin_
 
     async def get_bin(self, user_id: UUID) -> Bin:
         """Get users bin
