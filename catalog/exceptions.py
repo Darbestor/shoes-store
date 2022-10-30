@@ -7,3 +7,7 @@ class DBException(Exception):
 
 class ValidationException(Exception):
     """Validation exception"""
+
+
+class ValueException(Exception):
+    """Validation exception"""
