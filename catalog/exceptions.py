@@ -3,5 +3,3 @@
 
 class DBException(Exception):
     """Database exception"""
-
-    pass
