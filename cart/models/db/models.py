@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 class Item(BaseModel):
     """Item in bin"""
 
-    model_id: UUID
+    item_id: UUID
     quantity: int
 
 
