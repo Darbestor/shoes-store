@@ -1,13 +1,19 @@
 from uuid import UUID
 from fastapi import Depends
+from config.rabbitmq import RabbitMQClient
 from models.db.models import Bin
 from models.requests.bin import BinReq
 from repository.bin import BinRepository
 
 
 class BinService:
-    def __init__(self, repo: BinRepository = Depends()) -> None:
+    def __init__(
+        self,
+        repo: BinRepository = Depends(),
+        rabbitmq_client: RabbitMQClient = Depends(),
+    ) -> None:
         self.__repo = repo
+        self.__rabbitmq_client = rabbitmq_client
 
     async def add_item(self, request: BinReq) -> Bin:
         """Add item to bin
@@ -42,6 +48,11 @@ class BinService:
 
         # TODO send RabbitMQ message to create order
         bin_ = await self.__repo.remove_bin(user_id)
+
+        test = await self.__rabbitmq_client.publish(
+            self.__rabbitmq_client.publish_queue, bin_
+        )
+        print(test)
 
     async def clear_bin(self, user_id: UUID):
         """Clear bin

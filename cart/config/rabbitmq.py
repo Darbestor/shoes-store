@@ -1,6 +1,8 @@
+from typing import Any
 import aio_pika
 from aio_pika.pool import Pool
 from aio_pika.abc import AbstractRobustConnection
+from pydantic import BaseModel
 
 
 from .settings import settings
@@ -9,6 +11,15 @@ from .settings import settings
 class RabbitMQClient:
     connection: AbstractRobustConnection
     channel_pool: Pool
+    publish_queue: str = "orders"
+    consume_queue: str = "cart"
+
+    async def publish(self, routing_key: str, body: BaseModel):
+        async with RabbitMQClient.channel_pool.acquire() as channel:
+            return await channel.default_exchange.publish(
+                aio_pika.Message(body=body.json(exclude_unset=True).encode("UTF-8")),
+                routing_key=routing_key,
+            )
 
     @classmethod
     async def initialize(cls):
