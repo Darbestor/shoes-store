@@ -6,7 +6,7 @@ services:
       - PGADMIN_DEFAULT_EMAIL=admin@admin.com
       - PGADMIN_DEFAULT_PASSWORD=1234
     ports:
-      - 8080:80
+      - 8070:80
     volumes:
       - pgadmin_config:/pgadmin4/servers.json
   postgres_users:
@@ -50,6 +50,11 @@ services:
       - ME_CONFIG_MONGODB_ADMINPASSWORD=${CART_DB_PASSWORD}
       - ME_CONFIG_MONGODB_URL=mongodb://${CART_DB_USERNAME}:${CART_DB_PASSWORD}@mongodb_cart:27017/
       - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - 15672:15672
+      - 5672:5672
 volumes:
   pgadmin_config:
   db_users:
