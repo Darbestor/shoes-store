@@ -1,6 +1,6 @@
 from uuid import UUID
 from fastapi import Depends
-from config.rabbitmq import RabbitMQClient
+from rabbitmq.client import RabbitMQClient, RabbitMQClientFactory
 from models.db.models import Bin
 from models.requests.bin import BinReq
 from repository.bin import BinRepository
@@ -10,7 +10,11 @@ class BinService:
     def __init__(
         self,
         repo: BinRepository = Depends(),
-        rabbitmq_client: RabbitMQClient = Depends(),
+        rabbitmq_client: RabbitMQClient = Depends(
+            lambda: RabbitMQClientFactory.get_client(
+                RabbitMQClientFactory.publish_queue
+            )
+        ),
     ) -> None:
         self.__repo = repo
         self.__rabbitmq_client = rabbitmq_client
@@ -48,10 +52,9 @@ class BinService:
 
         bin_ = await self.__repo.remove_bin(user_id)
 
-        async with self.__rabbitmq_client.channel() as channel:
-            await self.__rabbitmq_client.publish(
-                channel, self.__rabbitmq_client.publish_queue, bin_
-            )
+        async with self.__rabbitmq_client as client:
+            test = await client.publish(bin_)
+            print(test)
 
     async def clear_bin(self, user_id: UUID):
         """Clear bin

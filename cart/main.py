@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 
 from config.db import init_db
-from config.rabbitmq import RabbitMQClient
+from rabbitmq.client import RabbitMQClientFactory
 from exceptions import DBException
 from api import bin as bin_
 
@@ -16,7 +16,7 @@ async def initialize():
     """Startup event"""
 
     await init_db()
-    await RabbitMQClient.initialize()
+    await RabbitMQClientFactory.init()
 
 
 @app.exception_handler(ValueError)
