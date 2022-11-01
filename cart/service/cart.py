@@ -46,13 +46,12 @@ class BinService:
             user_id (UUID): user identifier
         """
 
-        # TODO send RabbitMQ message to create order
         bin_ = await self.__repo.remove_bin(user_id)
 
-        test = await self.__rabbitmq_client.publish(
-            self.__rabbitmq_client.publish_queue, bin_
-        )
-        print(test)
+        async with self.__rabbitmq_client.channel() as channel:
+            await self.__rabbitmq_client.publish(
+                channel, self.__rabbitmq_client.publish_queue, bin_
+            )
 
     async def clear_bin(self, user_id: UUID):
         """Clear bin
