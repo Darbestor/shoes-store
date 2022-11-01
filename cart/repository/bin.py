@@ -68,6 +68,21 @@ class BinRepository:
         await bin_.save()
         return bin_
 
+    async def update_bin(self, user_id: UUID, items: dict[UUID, int]):
+        """Update items in bin in case user want to change an order
+
+        Args:
+            user_id (UUID): user identifier
+        """
+        bin_ = await Bin.find(Bin.id == user_id).first_or_none()
+
+        if bin_ is None:
+            bin_ = Bin(id=user_id)
+        bin_.items = [
+            Item(item_id=id_, quantity=quantity) for id_, quantity in items.items()
+        ]
+        await bin_.save()
+
     async def remove_bin(self, user_id: UUID) -> Bin:
         """Clear bin for user
 

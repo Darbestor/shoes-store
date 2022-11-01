@@ -1,8 +1,8 @@
 from types import TracebackType
 from typing import Optional, Type
 import aio_pika
+from aio_pika import RobustQueue, RobustConnection, RobustChannel
 from aio_pika.pool import Pool, PoolItemContextManager
-from aio_pika.abc import AbstractRobustConnection, AbstractChannel, AbstractQueue
 from pydantic import BaseModel
 
 
@@ -10,10 +10,10 @@ from config.settings import settings
 
 
 class RabbitMQClientFactory:
-    connection: AbstractRobustConnection
+    connection: RobustConnection
     channel_pool: Pool
-    publish_queue: AbstractQueue
-    consume_queue: AbstractQueue
+    publish_queue: RobustQueue
+    consume_queue: RobustQueue
 
     @classmethod
     async def init(cls):
@@ -41,15 +41,20 @@ class RabbitMQClientFactory:
 
 class RabbitMQClient:
     def __init__(
-        self, channel_pool: PoolItemContextManager, queue: AbstractQueue
+        self, channel_pool: PoolItemContextManager, queue: RobustQueue
     ) -> None:
         self.__pool = channel_pool
         self.queue = queue
-        self._channel: AbstractChannel
+        self._channel: RobustChannel
 
-    async def publish(self, body: BaseModel):
+    async def publish(self, key: str, body: BaseModel):
         return await self._channel.default_exchange.publish(
-            aio_pika.Message(body=body.json(exclude_unset=True).encode("UTF-8")),
+            aio_pika.Message(
+                body=body.json(exclude_unset=True).encode("UTF-8"),
+                content_type="application/json",
+                content_encoding="base64",
+                type=key,
+            ),
             routing_key=self.queue.name,
         )
 
