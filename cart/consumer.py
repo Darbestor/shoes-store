@@ -2,17 +2,27 @@ import asyncio
 import aio_pika
 
 from rabbitmq.client import RabbitMQClientFactory
+from config.db import init_db
+
+
+def consumer(func):
+    async def inner1(message: aio_pika.IncomingMessage, *args, **kwargs):
+
+        await func(message, *args, **kwargs)
+
+    return inner1
 
 
 async def process_message(
-    message: aio_pika.abc.AbstractIncomingMessage,
+    message: aio_pika.IncomingMessage,
 ) -> None:
     async with message.process():
         print(message.body)
-        await asyncio.sleep(1)
+        # await message.ack()
 
 
 async def main():
+    await init_db()
     await RabbitMQClientFactory.init()
     async with RabbitMQClientFactory.get_client(
         RabbitMQClientFactory.consume_queue

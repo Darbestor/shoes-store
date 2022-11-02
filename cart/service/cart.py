@@ -3,6 +3,7 @@ from fastapi import Depends
 from rabbitmq.client import RabbitMQClient, RabbitMQClientFactory
 from models.db.models import Bin
 from models.requests.bin import BinReq
+from rabbitmq.types import OrdersType
 from repository.bin import BinRepository
 
 
@@ -54,7 +55,7 @@ class BinService:
 
         async with self.__rabbitmq_client as client:
             test = await client.publish(
-                "cart.update", bin_
+                OrdersType.CREATE, bin_
             )  # TODO make constants for keys
             print(test)
 
