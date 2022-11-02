@@ -1,15 +1,5 @@
 services:
-  pgadmin:
-    image: dpage/pgadmin4
-    restart: always
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
-      - PGADMIN_DEFAULT_PASSWORD=1234
-    ports:
-      - 8070:80
-    volumes:
-      - pgadmin_config:/pgadmin4/servers.json
-  postgres_users:
+  db_users:
     image: postgres:14.5-alpine
     restart: always
     environment:
@@ -20,7 +10,7 @@ services:
       - db_users:/var/lib/postgresql/data
     ports:
       - ${USERS_DB_PORT}:5432
-  mongodb_catalog:
+  db_catalog:
     image: mongo:6.0.2
     restart: always
     environment:
@@ -30,7 +20,29 @@ services:
       - db_catalog:/data/db
     ports:
       - ${CATALOG_DB_PORT}:27017
-  mongodb_cart:
+
+  backend_cart:
+    image: cart:latest
+    depends_on:
+      - db_cart
+    env_file:
+      - ./cart/docker.env
+    build:
+      context: ./cart
+      dockerfile: Dockerfile.backend
+    ports:
+      - 8013:8000
+  rabbitmq_cart:
+    image: rabbitmq_cart:latest
+    depends_on:
+      - rabbitmq
+      - db_cart
+    env_file:
+      - ./cart/docker.env
+    build:
+      context: ./cart
+      dockerfile: Dockerfile.rabbitmq
+  db_cart:
     image: mongo:6.0.2
     restart: always
     environment:
@@ -40,6 +52,17 @@ services:
       - db_cart:/data/db
     ports:
       - ${CART_DB_PORT}:27017
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=1234
+    ports:
+      - 8070:80
+    volumes:
+      - pgadmin_config:/pgadmin4/servers.json
   mongo-express:
     image: mongo-express
     restart: always
@@ -48,7 +71,7 @@ services:
     environment:
       - ME_CONFIG_MONGODB_ADMINUSERNAME=${CART_DB_USERNAME}
       - ME_CONFIG_MONGODB_ADMINPASSWORD=${CART_DB_PASSWORD}
-      - ME_CONFIG_MONGODB_URL=mongodb://${CART_DB_USERNAME}:${CART_DB_PASSWORD}@mongodb_cart:27017/
+      - ME_CONFIG_MONGODB_URL=mongodb://${CART_DB_USERNAME}:${CART_DB_PASSWORD}@db_cart:27017/
       - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
   rabbitmq:
     image: rabbitmq:3-management
