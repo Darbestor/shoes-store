@@ -23,6 +23,7 @@ services:
 
   backend_cart:
     image: cart:latest
+    restart: on-failure
     depends_on:
       - db_cart
     env_file:
@@ -34,6 +35,7 @@ services:
       - 8013:8000
   rabbitmq_cart:
     image: rabbitmq_cart:latest
+    restart: on-failure
     depends_on:
       - rabbitmq
       - db_cart
