@@ -14,7 +14,7 @@ async def initialize():
     """Startup event"""
 
     await init_db()
-    await RabbitMQClientFactory.init(queues=["orders", "cart"])
+    await RabbitMQClientFactory.init(queues=["orders", "cart", "order_history"])
 
 
 @app.on_event("shutdown")
