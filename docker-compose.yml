@@ -25,7 +25,7 @@ services:
     image: cart:latest
     restart: on-failure
     depends_on:
-      - db_cart
+      - db_mongo
     env_file:
       - ./cart/docker.env
     build:
@@ -38,23 +38,47 @@ services:
     restart: on-failure
     depends_on:
       - rabbitmq
-      - db_cart
+      - db_mongo
     env_file:
       - ./cart/docker.env
     build:
       context: ./cart
       dockerfile: Dockerfile.rabbitmq
-  db_cart:
+
+  backend_orders:
+    image: orders:latest
+    restart: on-failure
+    depends_on:
+      - db_mongo
+    env_file:
+      - ./orders/docker.env
+    build:
+      context: ./orders
+      dockerfile: Dockerfile.backend
+    ports:
+      - 8014:8000
+  rabbitmq_orders:
+    image: rabbitmq_orders:latest
+    restart: on-failure
+    depends_on:
+      - rabbitmq
+      - db_mongo
+    env_file:
+      - ./orders/docker.env
+    build:
+      context: ./orders
+      dockerfile: Dockerfile.rabbitmq
+
+  db_mongo:
     image: mongo:6.0.2
     restart: always
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${CART_DB_USERNAME}
       - MONGO_INITDB_ROOT_PASSWORD=${CART_DB_PASSWORD}
     volumes:
-      - db_cart:/data/db
+      - db_mongo:/data/db
     ports:
       - ${CART_DB_PORT}:27017
-
   pgadmin:
     image: dpage/pgadmin4
     restart: always
@@ -73,7 +97,7 @@ services:
     environment:
       - ME_CONFIG_MONGODB_ADMINUSERNAME=${CART_DB_USERNAME}
       - ME_CONFIG_MONGODB_ADMINPASSWORD=${CART_DB_PASSWORD}
-      - ME_CONFIG_MONGODB_URL=mongodb://${CART_DB_USERNAME}:${CART_DB_PASSWORD}@db_cart:27017/
+      - ME_CONFIG_MONGODB_URL=mongodb://${CART_DB_USERNAME}:${CART_DB_PASSWORD}@db_mongo:27017/
       - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
   rabbitmq:
     image: rabbitmq:3-management
@@ -83,5 +107,5 @@ services:
 volumes:
   pgadmin_config:
   db_users:
-  db_cart:
+  db_mongo:
   db_catalog:
