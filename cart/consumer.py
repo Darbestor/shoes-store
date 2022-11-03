@@ -16,9 +16,9 @@ def consumer(func):
 async def process_message(
     message: aio_pika.IncomingMessage,
 ) -> None:
-    async with message.process():
+    async with message.process(ignore_processed=True):
         print(message.body)
-        # await message.ack()
+        await message.nack()
 
 
 async def main():
