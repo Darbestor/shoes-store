@@ -29,14 +29,11 @@ class OrderService:
         await self._cancel_order(order_id)
         # TODO send order back to cart
 
-    async def confirm_order(self, order_id: UUID):
-        order = await self.__repo.get_order(order_id)
-        # send order to order history
-
-    async def update_order_info(self, payload: OrderInfoReq) -> Order:
-        info_dict = payload.dict(exclude_unset=True)
+    async def confirm_order(self, info: OrderInfoReq):
+        info_dict = info.dict(exclude_unset=True)
         order_id = info_dict.pop("order_id")
-        return await self.__repo.update_order(order_id, info_dict)
+        order = await self.__repo.delete_order(order_id)
+        # TODO send order to order history
 
     async def get_order(self, order_id: UUID) -> Order:
         return await self.__repo.get_order(order_id)

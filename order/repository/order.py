@@ -37,23 +37,6 @@ class OrderRepository:
         await order.save()
         return order
 
-    async def update_order(self, order_id: UUID, details: dict) -> Order:
-        """Update order information
-
-        Args:
-            order_id (UUID): Order identifier
-            details (dict): details
-
-        Returns:
-            Order: Updated order instance
-        """
-        order = await self.get_order(order_id)
-        for key, value in details.items():
-            setattr(order, key, value)
-        await order.save()
-
-        return order
-
     async def delete_order(self, order_id: UUID) -> Order:
         """Delete order
 
