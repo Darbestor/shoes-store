@@ -1,11 +1,11 @@
 import importlib
+import logging
 from types import TracebackType
 from typing import Optional, Type
 import aio_pika
 from aio_pika.abc import AbstractQueue, AbstractConnection, AbstractChannel
 from aio_pika.pool import Pool, PoolItemContextManager
 from pydantic import BaseModel
-import logging
 
 from config.settings import settings
 from rabbitmq.message_handlers.base import HandlerBase
