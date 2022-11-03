@@ -30,4 +30,4 @@ class Order(Document):
         """settings"""
 
         name = "orders"
-        indexes = [IndexModel("created_date", expireAfterSeconds="900")]
+        indexes = [IndexModel("created_date", expireAfterSeconds=900)]

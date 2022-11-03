@@ -4,9 +4,11 @@ import aio_pika
 from aio_pika.abc import AbstractQueue, AbstractConnection, AbstractChannel
 from aio_pika.pool import Pool, PoolItemContextManager
 from pydantic import BaseModel
+import importlib
 
 
 from config.settings import settings
+from rabbitmq.message_handlers.base import HandlerBase, HandlerError
 
 
 class RabbitMQClientFactory:
@@ -63,6 +65,26 @@ class RabbitMQClient:
             ),
             routing_key=self.queue.name,
         )
+
+    async def consume_handler(self, message: aio_pika.IncomingMessage):
+        async with message.process(ignore_processed=True):
+            try:
+                if message.type is None:
+                    raise Exception("Message without type")
+                module_name, class_name = message.type.rsplit(".", 1)
+                class_name = class_name.capitalize()
+                class_ = getattr(
+                    importlib.import_module(f"rabbitmq.message_handlers.{module_name}"),
+                    class_name,
+                )
+                handler: HandlerBase = class_(message)
+                await handler.handle()
+            except (ImportError, AttributeError) as ex:
+                print(ex)
+                await message.nack()
+            except Exception as ex:
+                print(ex)
+                await message.reject()
 
     @property
     def channel(self):

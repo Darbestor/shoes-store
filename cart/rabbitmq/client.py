@@ -52,7 +52,6 @@ class RabbitMQClient:
             aio_pika.Message(
                 body=body.json(exclude_unset=True).encode("UTF-8"),
                 content_type="application/json",
-                content_encoding="base64",
                 type=key,
             ),
             routing_key=self.queue.name,

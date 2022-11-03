@@ -55,7 +55,7 @@ class BinService:
         bin_ = await self.__repo.remove_bin(user_id)
 
         async with self.__rabbitmq_client as client:
-            test = await client.publish(OrdersType.CREATE, bin_)
+            test = await client.publish(OrdersType.CREATE.value, bin_)
             print(test)
 
     async def clear_bin(self, user_id: UUID):

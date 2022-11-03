@@ -5,8 +5,11 @@ from config.db import init_db
 
 from exceptions import DBException
 from rabbitmq.client import RabbitMQClientFactory
+from rabbitmq.types import QueueName
+from api import order
 
 app = FastAPI()
+app.include_router(order.router)
 
 
 @app.on_event("startup")
@@ -14,7 +17,7 @@ async def initialize():
     """Startup event"""
 
     await init_db()
-    await RabbitMQClientFactory.init(queues=["orders", "cart", "order_history"])
+    await RabbitMQClientFactory.init(queues=[e.value for e in QueueName])
 
 
 @app.on_event("shutdown")

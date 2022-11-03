@@ -1,8 +1,9 @@
 from enum import Enum
 
 
-class OrdersType(str, Enum):
-    CREATE = "orders.create"
+class QueueName(str, Enum):
+    ORDERS = "orders"
+    CART = "cart"
 
 
 class CartType(str, Enum):
