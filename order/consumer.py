@@ -1,8 +1,12 @@
 import asyncio
+import logging
 
 from rabbitmq.client import RabbitMQClientFactory
 from rabbitmq.types import QueueName
 from config.db import init_db
+
+logging.basicConfig(level=logging.INFO)
+logging.getLogger("aio_pika").setLevel(logging.INFO)
 
 
 async def main():
