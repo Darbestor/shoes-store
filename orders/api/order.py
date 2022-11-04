@@ -9,7 +9,10 @@ router = APIRouter(prefix="/order", tags=["order"])
 
 
 @router.post("/{order_id}")
-async def confirm_order(request: OrderInfoReq, service: OrderService = Depends()):
+async def confirm_order(
+    request: OrderInfoReq = Depends(OrderInfoReq.as_form),
+    service: OrderService = Depends(),
+):
     return await service.confirm_order(request)
 
 

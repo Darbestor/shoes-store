@@ -44,7 +44,7 @@ class RabbitMQClientFactory:
 
     @classmethod
     async def shutdown(cls):
-        await cls.shutdown()
+        await cls.connection.close()
 
 
 class RabbitMQClient:
