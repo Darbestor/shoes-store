@@ -4,8 +4,6 @@ from fastapi.exceptions import RequestValidationError
 from config.db import init_db
 
 from exceptions import DBException
-from rabbitmq.client import RabbitMQClientFactory
-from rabbitmq.types import QueueName
 from api import order_history
 
 app = FastAPI()
@@ -17,13 +15,6 @@ async def initialize():
     """Startup event"""
 
     await init_db()
-    await RabbitMQClientFactory.init(queues=[e.value for e in QueueName])
-
-
-@app.on_event("shutdown")
-async def destroy():
-
-    await RabbitMQClientFactory.shutdown()
 
 
 @app.exception_handler(ValueError)
