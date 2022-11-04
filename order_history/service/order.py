@@ -1,39 +1,31 @@
 from uuid import UUID
 from fastapi import Depends
-from models.db.models import Order
-from models.requests.order import OrderInfoReq
+from models.db.models import Order, OrderHistory
+from models.requests.order_history import OrderInfoReq
 from rabbitmq.client import RabbitMQClient, RabbitMQClientFactory
 from rabbitmq.models import OrderCreate
 from rabbitmq.types import CartType, OrderHistoryType, QueueName
-from repository.order import OrderRepository
+from repository.order_history import OrderHistoryRepository
 
 
-class OrderService:
+class OrderHistoryService:
     def __init__(
         self,
-        repo: OrderRepository = Depends(),
-        rabbitmq_cart_client: RabbitMQClient = Depends(
-            lambda: RabbitMQClientFactory.get_client(QueueName.CART.value)
-        ),
-        rabbitmq_history_client: RabbitMQClient = Depends(
-            lambda: RabbitMQClientFactory.get_client(QueueName.ORDER_HISTORY.value)
-        ),
+        repo: OrderHistoryRepository = Depends(),
     ) -> None:
         self.__repo = repo
-        self.__rabbitmq_cart_client = rabbitmq_cart_client
-        self.__rabbitmq_history_client = rabbitmq_history_client
 
-    async def create_order(self, payload: OrderCreate) -> Order:
-        """Create order
+    async def add_order(self, payload: OrderReq) -> OrderHistory:
+        """Add  user order to history
 
         Args:
             payload (OrderCreate): message body from rabbitmq
 
         Returns:
-            Order: Instance of Order
+            OrderHistory: User's order history
         """
-        # TODO reserve items for order
-        return await self.__repo.add_order(payload.user_id, payload.items)
+
+        return await self.__repo.add_order(payload.user_id, payload.order)
 
     async def delete_order(self, order_id: UUID):
         await self._cancel_order(order_id)
@@ -52,10 +44,10 @@ class OrderService:
             setattr(order, key, value)
         await self.__rabbitmq_history_client.publish(OrderHistoryType.ADD.value, order)
 
-    async def get_order(self, order_id: UUID) -> Order:
+    async def get_order(self, order_id: UUID) -> OrderHistory:
         return await self.__repo.get_order(order_id)
 
-    async def get_user_orders(self, user_id: UUID) -> list[Order]:
+    async def get_user_orders(self, user_id: UUID) -> list[OrderHistory]:
         return await self.__repo.get_user_orders(user_id)
 
     async def _cancel_order(self, order_id: UUID):

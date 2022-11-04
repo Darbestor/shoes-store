@@ -6,10 +6,10 @@ from config.db import init_db
 from exceptions import DBException
 from rabbitmq.client import RabbitMQClientFactory
 from rabbitmq.types import QueueName
-from api import order
+from api import order_history
 
 app = FastAPI()
-app.include_router(order.router)
+app.include_router(order_history.router)
 
 
 @app.on_event("startup")

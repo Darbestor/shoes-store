@@ -4,7 +4,6 @@ from datetime import datetime
 from uuid import UUID, uuid4
 from beanie import Document
 from pydantic import BaseModel, Field
-from pymongo import IndexModel
 
 
 class Item(BaseModel):
@@ -14,11 +13,7 @@ class Item(BaseModel):
     quantity: int
 
 
-class Order(Document):
-    """Mongodb model"""
-
-    id: UUID = Field(default_factory=uuid4)  # type: ignore
-    user_id: UUID = Field(default_factory=uuid4)  # type: ignore
+class Order(BaseModel):
     items: list[Item]
     address: str | None
     phone: int | None
@@ -26,8 +21,14 @@ class Order(Document):
     total_price: float
     created_date: datetime
 
+
+class OrderHistory(Document):
+    """Mongodb model"""
+
+    user_id: UUID = Field(default_factory=uuid4, alias="id_")  # type: ignore
+    orders: list[Order]
+
     class Settings:
         """settings"""
 
-        name = "orders"
-        indexes = [IndexModel("created_date", expireAfterSeconds=900)]
+        name = "order_history"

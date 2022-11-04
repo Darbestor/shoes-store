@@ -4,7 +4,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 from beanie import init_beanie
 
 from config.settings import settings
-from models.db.models import Order
+from models.db.models import OrderHistory
 
 
 async def init_db():
@@ -16,4 +16,6 @@ async def init_db():
     )
 
     # Initialize beanie with the Product document class and a database
-    await init_beanie(database=client[settings.db_database], document_models=[Order])
+    await init_beanie(
+        database=client[settings.db_database], document_models=[OrderHistory]
+    )

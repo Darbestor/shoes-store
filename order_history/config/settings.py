@@ -21,7 +21,7 @@ class Settings(BaseSettings):
 
         env_file = ".env"
         env_file_encoding = "utf-8"
-        env_prefix = "order_"
+        env_prefix = "order_history_"
 
 
 settings = Settings()

@@ -2,13 +2,13 @@ import json
 from rabbitmq.message_handlers.base import HandlerBase
 from rabbitmq.models import OrderCreate
 from repository.order import OrderRepository
-from service.order import OrderService
+from service.order import OrderHistoryService
 
 
 class Create(HandlerBase):
     async def handle(self):
         await super().handle()
-        service = OrderService(repo=OrderRepository())
+        service = OrderHistoryService(repo=OrderRepository())
         model_dict = json.loads(self._message.body)
 
         items = {item["item_id"]: item["quantity"] for item in model_dict["items"]}
