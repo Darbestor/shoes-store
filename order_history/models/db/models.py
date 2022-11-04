@@ -25,7 +25,8 @@ class Order(BaseModel):
 class OrderHistory(Document):
     """Mongodb model"""
 
-    user_id: UUID = Field(default_factory=uuid4, alias="id_")  # type: ignore
+    # user id
+    id: UUID = Field(default_factory=uuid4)  # type: ignore
     orders: list[Order]
 
     class Settings:

@@ -1,3 +1,5 @@
+from datetime import datetime
+from functools import wraps
 import importlib
 import logging
 from types import TracebackType
@@ -36,7 +38,7 @@ class RabbitMQClientFactory:
         if not cls.initialized:
             raise RuntimeError("Initialize class with init() before using any methods")
         if cls.connection.is_closed:
-            raise Exception("Connection to RabbitMQ closed")
+            raise ConnectionError("Connection to RabbitMQ closed")
         declared_queue = next((q for q in cls.queues if q.name == queue), None)
         if declared_queue is None:
             raise ValueError(f"RabbitMQ queue '{queue}' is not declared")
@@ -53,18 +55,18 @@ class RabbitMQClient:
     ) -> None:
         self.__pool = channel_pool
         self.queue = queue
-        self._channel: AbstractChannel
+        self._channel: AbstractChannel | None = None
 
     async def publish(self, key: str, body: BaseModel):
         logging.info(
             "Sending message '%s' to '%s' with key '%s'", body, self.queue, key
         )
-        return await self._channel.default_exchange.publish(
+        return await self.channel.default_exchange.publish(
             aio_pika.Message(
                 body=body.json(exclude_unset=True).encode("UTF-8"),
                 content_type="application/json",
-                content_encoding="base64",
                 type=key,
+                timestamp=datetime.utcnow(),
             ),
             routing_key=self.queue.name,
         )
@@ -99,6 +101,10 @@ class RabbitMQClient:
 
     @property
     def channel(self):
+        if self._channel is None:
+            raise ConnectionError(
+                "Channel is not opened.\nClient should be used is 'async with' context."
+            )
         return self._channel
 
     async def __aenter__(self):

@@ -1,3 +1,4 @@
+from datetime import datetime
 import importlib
 import logging
 from types import TracebackType
@@ -53,18 +54,18 @@ class RabbitMQClient:
     ) -> None:
         self.__pool = channel_pool
         self.queue = queue
-        self._channel: AbstractChannel
+        self._channel: AbstractChannel | None = None
 
     async def publish(self, key: str, body: BaseModel):
         logging.info(
             "Sending message '%s' to '%s' with key '%s'", body, self.queue, key
         )
-        return await self._channel.default_exchange.publish(
+        return await self.channel.default_exchange.publish(
             aio_pika.Message(
                 body=body.json(exclude_unset=True).encode("UTF-8"),
                 content_type="application/json",
-                content_encoding="base64",
                 type=key,
+                timestamp=datetime.utcnow(),
             ),
             routing_key=self.queue.name,
         )
@@ -99,6 +100,10 @@ class RabbitMQClient:
 
     @property
     def channel(self):
+        if self._channel is None:
+            raise ConnectionError(
+                "Channel is not opened.\nClient should be used is 'async with' context."
+            )
         return self._channel
 
     async def __aenter__(self):

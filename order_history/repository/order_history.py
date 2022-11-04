@@ -17,16 +17,16 @@ class OrderHistoryRepository:
             OrderHistory: updated instance for user's order history
         """
 
-        history = await OrderHistory.find_one(OrderHistory.user_id == user_id)
+        history = await OrderHistory.find_one(OrderHistory.id == user_id)
         if history is None:
-            history = OrderHistory(user_id=user_id, orders=[])
+            history = OrderHistory(id=user_id, orders=[])
 
         history.orders.append(order)
         await history.save()
         return history
 
     async def get_history(self, user_id: UUID) -> OrderHistory:
-        order = await OrderHistory.find_one(OrderHistory.user_id == user_id)
+        order = await OrderHistory.find_one(OrderHistory.id == user_id)
         if order is None:
             raise ValueError(f"Order history for '{user_id}' not found")
         return order
