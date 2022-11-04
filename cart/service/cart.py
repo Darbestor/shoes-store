@@ -51,12 +51,11 @@ class BinService:
             user_id (UUID): user identifier
         """
 
+        # TODO check if all items available before sending to order
         bin_ = await self.__repo.remove_bin(user_id)
 
         async with self.__rabbitmq_client as client:
-            test = await client.publish(
-                OrdersType.CREATE, bin_
-            )  # TODO make constants for keys
+            test = await client.publish(OrdersType.CREATE.value, bin_)
             print(test)
 
     async def clear_bin(self, user_id: UUID):
