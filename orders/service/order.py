@@ -40,7 +40,8 @@ class OrderService:
 
     async def change_order(self, order_id: UUID):
         order = await self._cancel_order(order_id)
-        await self.__rabbitmq_cart_client.publish(CartType.UPDATE.value, order)
+        async with self.__rabbitmq_cart_client as client:
+            await client.publish(CartType.UPDATE.value, order)
 
     async def confirm_order(self, info: OrderInfoReq):
         info_dict = info.dict(exclude_unset=True)
@@ -50,7 +51,8 @@ class OrderService:
         # fill order information before sending to history
         for key, value in info_dict.items():
             setattr(order, key, value)
-        await self.__rabbitmq_history_client.publish(OrderHistoryType.ADD.value, order)
+        async with self.__rabbitmq_history_client as client:
+            await client.publish(OrderHistoryType.ADD.value, order)
 
     async def get_order(self, order_id: UUID) -> Order:
         return await self.__repo.get_order(order_id)

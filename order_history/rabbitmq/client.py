@@ -1,5 +1,4 @@
 from datetime import datetime
-from functools import wraps
 import importlib
 import logging
 from types import TracebackType
@@ -38,7 +37,7 @@ class RabbitMQClientFactory:
         if not cls.initialized:
             raise RuntimeError("Initialize class with init() before using any methods")
         if cls.connection.is_closed:
-            raise ConnectionError("Connection to RabbitMQ closed")
+            raise Exception("Connection to RabbitMQ closed")
         declared_queue = next((q for q in cls.queues if q.name == queue), None)
         if declared_queue is None:
             raise ValueError(f"RabbitMQ queue '{queue}' is not declared")
@@ -46,7 +45,7 @@ class RabbitMQClientFactory:
 
     @classmethod
     async def shutdown(cls):
-        await cls.connection.close()
+        await cls.shutdown()
 
 
 class RabbitMQClient:
