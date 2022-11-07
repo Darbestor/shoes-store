@@ -28,5 +28,5 @@ class OrderHistoryRepository:
     async def get_history(self, user_id: UUID) -> OrderHistory:
         order = await OrderHistory.find_one(OrderHistory.id == user_id)
         if order is None:
-            raise ValueError(f"Order history for '{user_id}' not found")
+            raise ValueError("user_id", f"Order history for '{user_id}' not found")
         return order

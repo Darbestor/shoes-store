@@ -97,9 +97,9 @@ services:
       - rabbitmq
       - db_mongo
     env_file:
-      - ./orders/docker.env
+      - ./order_history/docker.env
     build:
-      context: ./orders
+      context: ./order_history
       dockerfile: Dockerfile.rabbitmq
 
   db_postgres:
