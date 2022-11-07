@@ -12,8 +12,15 @@ from openapi import OpenAPIGatherer
 logging.basicConfig(level=logging.INFO)
 
 app = FastAPI()
+if settings.environment == "Production":
+    app.root_path = "/api"
 
 app.openapi = lambda: OpenAPIGatherer.openapi(app)
+
+
+@app.get("/")
+def index():
+    return {"message": "Gateway service"}
 
 
 @app.api_route(

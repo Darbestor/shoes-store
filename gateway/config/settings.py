@@ -6,6 +6,7 @@ from pydantic import BaseSettings
 class Settings(BaseSettings):
     """Service settings"""
 
+    environment: str = ""
     db_username: str = ""
     db_password: str = ""
     db_database: str = ""
