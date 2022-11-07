@@ -76,11 +76,13 @@ class BinRepository:
         """
         bin_ = await Bin.find(Bin.id == user_id).first_or_none()
 
-        if bin_ is None:
-            bin_ = Bin(id=user_id)
-        bin_.items = [
+        new_items = [
             Item(item_id=id_, quantity=quantity) for id_, quantity in items.items()
         ]
+        if bin_ is None:
+            bin_ = Bin(id=user_id, items=new_items)
+        else:
+            bin_.items = new_items
         await bin_.save()
 
     async def remove_bin(self, user_id: UUID) -> Bin:

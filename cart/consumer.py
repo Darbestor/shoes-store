@@ -1,41 +1,27 @@
 import asyncio
-import aio_pika
+import logging
 
 from rabbitmq.client import RabbitMQClientFactory
+from rabbitmq.types import QueueName
 from config.db import init_db
 
-
-def consumer(func):
-    async def inner1(message: aio_pika.IncomingMessage, *args, **kwargs):
-
-        await func(message, *args, **kwargs)
-
-    return inner1
-
-
-async def process_message(
-    message: aio_pika.IncomingMessage,
-) -> None:
-    async with message.process(ignore_processed=True):
-        print(message.body)
-        await message.nack()
+logging.basicConfig(level=logging.INFO)
+logging.getLogger("aio_pika").setLevel(logging.INFO)
 
 
 async def main():
     await init_db()
-    await RabbitMQClientFactory.init()
-    async with RabbitMQClientFactory.get_client(
-        RabbitMQClientFactory.consume_queue
-    ) as client:
+    await RabbitMQClientFactory.init(queues=[e.value for e in QueueName])
+    async with RabbitMQClientFactory.get_client(QueueName.CART.value) as client:
         await client.channel.set_qos(10)
 
-        await client.queue.consume(process_message)
+        await client.queue.consume(client.consume_handler)
 
         try:
             # Wait until terminate
             await asyncio.Future()
         finally:
-            await RabbitMQClientFactory.close()
+            await RabbitMQClientFactory.shutdown()
 
 
 if __name__ == "__main__":

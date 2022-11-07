@@ -1,9 +1,9 @@
 from uuid import UUID
 from fastapi import Depends
 from rabbitmq.client import RabbitMQClient, RabbitMQClientFactory
+from rabbitmq.types import OrderType, QueueName
 from models.db.models import Bin
 from models.requests.bin import BinReq
-from rabbitmq.types import OrdersType
 from repository.bin import BinRepository
 
 
@@ -12,9 +12,7 @@ class BinService:
         self,
         repo: BinRepository = Depends(),
         rabbitmq_client: RabbitMQClient = Depends(
-            lambda: RabbitMQClientFactory.get_client(
-                RabbitMQClientFactory.publish_queue
-            )
+            lambda: RabbitMQClientFactory.get_client(QueueName.ORDERS.value)
         ),
     ) -> None:
         self.__repo = repo
@@ -29,8 +27,16 @@ class BinService:
         Returns:
             Bin: Bin instance
         """
-
+        # TODO check if user exists, model exists and quantity available
         return await self.__repo.add_item(**request.dict())
+
+    async def update_bin(self, user_id: UUID, items: dict):
+        """Update bin
+
+        Args:
+            request (BinReq): payload
+        """
+        await self.__repo.update_bin(user_id, items)
 
     async def remove_item(self, request: BinReq) -> Bin:
         """Remove item from bin completly or decrease quantity
@@ -55,7 +61,7 @@ class BinService:
         bin_ = await self.__repo.remove_bin(user_id)
 
         async with self.__rabbitmq_client as client:
-            test = await client.publish(OrdersType.CREATE.value, bin_)
+            test = await client.publish(OrderType.CREATE.value, bin_)
             print(test)
 
     async def clear_bin(self, user_id: UUID):
