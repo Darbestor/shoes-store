@@ -10,7 +10,7 @@ from models.responses.login import LoginResponse
 from repository.login import LoginRepository
 from services.login import LoginService
 
-router = APIRouter(prefix="/login", tags=["login"])
+router = APIRouter(tags=["login"])
 
 
 @router.post("/authorize", response_model=UUID)

@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from service.order import OrderHistoryService
 
 
-router = APIRouter(prefix="/order_history", tags=["order history"])
+router = APIRouter(tags=["order history"])
 
 
 @router.get("/{user_id}")

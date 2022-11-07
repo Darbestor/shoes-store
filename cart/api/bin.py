@@ -5,7 +5,7 @@ from models.requests.bin import BinReq
 from service.cart import BinService
 
 
-router = APIRouter(prefix="/cart", tags=["cart"])
+router = APIRouter(tags=["cart"])
 
 
 @router.post("/{user_id}")

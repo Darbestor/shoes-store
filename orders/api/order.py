@@ -5,7 +5,7 @@ from models.requests.order import OrderInfoReq
 from service.order import OrderService
 
 
-router = APIRouter(prefix="/order", tags=["order"])
+router = APIRouter(tags=["order"])
 
 
 @router.post("/{order_id}")
