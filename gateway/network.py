@@ -21,23 +21,20 @@ async def make_request(
     url: str,
     method: str,
     data: dict | None = None,
-    params: dict | None = None,
+    form_data: dict | None = None,
     headers: dict | None = None,
 ):
     """
     Args:
         url: is the url for one of the in-network services
         method: is the lower version of one of the HTTP methods: GET, POST, PUT, DELETE # noqa
-        data: is the payload
-        params: query parameters
+        data: json payload. Data and form_data cannot be used at the same time
+        form_data: url encoded form data. Data and form_data cannot be used at the same time
         headers: is the header to put additional headers into request
     Returns:
         service result coming / non-blocking http request (coroutine)
     """
-    if data is None:
-        data = {}
-
     request = getattr(SESSION, method)
-    async with request(url=url, json=data, params=params, headers=headers) as response:
+    async with request(url=url, json=data, data=form_data, headers=headers) as response:
         data = await response.json()
         return (data, response.status)

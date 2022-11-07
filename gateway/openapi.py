@@ -29,7 +29,8 @@ class OpenAPIGatherer:
 
     @classmethod
     async def _get_service_api(cls, url: str, tag=None):
-        openapi = await make_request(f"{url}/openapi.json", "get")
+        # TODO test when service unavailable
+        openapi = await make_request(url + "openapi.json", "get")
         return openapi[0], tag
 
     @classmethod
