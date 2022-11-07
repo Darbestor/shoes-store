@@ -4,41 +4,23 @@ import logging
 import aiohttp
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.responses import JSONResponse
-from fastapi.openapi.utils import get_openapi
 
 from config.settings import settings
 from network import init_session, destroy_session, make_request
 from openapi import OpenAPIGatherer
-from router import GatewayRoute
 
 logging.basicConfig(level=logging.INFO)
 
 app = FastAPI()
 
-
-def custom_openapi():
-    if app.openapi_schema:
-        return app.openapi_schema
-    openapi_schema = get_openapi(
-        title="Shoes store Gateway",
-        version="1.0.0",
-        description="Shoes store API for all services",
-        routes=app.routes,
-    )
-
-    openapi_schema["paths"] = openapi_schema["paths"] | OpenAPIGatherer.paths
-    openapi_schema["components"]["schemas"] = (
-        openapi_schema["components"]["schemas"] | OpenAPIGatherer.components
-    )
-    app.openapi_schema = openapi_schema
-    return app.openapi_schema
+app.openapi = lambda: OpenAPIGatherer.openapi(app)
 
 
-app.openapi = custom_openapi
-app.router.route_class = GatewayRoute
-
-
-@app.api_route("/{full_path:path}", methods=["get", "post", "put", "delete"])
+@app.api_route(
+    "/{full_path:path}",
+    methods=["get", "post", "put", "delete"],
+    include_in_schema=False,
+)
 async def capture_routes(request: Request, full_path: str):
 
     method = request.method.lower()

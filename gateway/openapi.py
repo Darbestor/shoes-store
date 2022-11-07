@@ -1,5 +1,7 @@
 import asyncio
 import logging
+from fastapi import FastAPI
+from fastapi.openapi.utils import get_openapi
 
 from config.settings import settings
 from network import make_request
@@ -10,8 +12,9 @@ gathererLogger = logging.getLogger("OpenAPIGatherer")
 class OpenAPIGatherer:
     """Microservices API collector"""
 
-    paths: dict | None = None
-    components: dict | None = None
+    _paths: dict | None = None
+    _components: dict | None = None
+    openapi_schema: dict | None = None
 
     @classmethod
     async def gather_openapi(cls):
@@ -25,7 +28,7 @@ class OpenAPIGatherer:
             *tasks,
             return_exceptions=True,
         )
-        cls.paths, cls.components = cls._merge_schemas(openapi_list)
+        cls._paths, cls._components = cls._merge_schemas(openapi_list)
 
     @classmethod
     async def _get_service_api(cls, url: str, tag=None):
@@ -49,3 +52,31 @@ class OpenAPIGatherer:
                 else:
                     openapi_components[_type] = definition
         return openapi_paths, openapi_components
+
+    @classmethod
+    def openapi(cls, base_app: FastAPI):
+        if cls.openapi_schema:
+            return cls.openapi_schema
+
+        gathererLogger.info("Constructing openapi schema")
+        openapi_schema = get_openapi(
+            title="Shoes store Gateway",
+            version="1.0.0",
+            description="Shoes store API for all services",
+            routes=base_app.routes,
+        )
+        if "paths" in openapi_schema:
+            openapi_schema["paths"] = openapi_schema["paths"] | cls._paths
+        else:
+            openapi_schema["paths"] = cls._paths
+
+        components: dict = {"schemas": {}}
+        if "components" in openapi_schema:
+            components = openapi_schema["components"]
+        else:
+            openapi_schema["components"] = components
+
+        components["schemas"] = components["schemas"] | cls._components
+
+        cls.openapi_schema = openapi_schema
+        return cls.openapi_schema
