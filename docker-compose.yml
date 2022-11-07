@@ -1,0 +1,130 @@
+services:
+  gateway:
+    image: gateway:latest
+    restart: on-failure
+    depends_on:
+      - backend_users
+      - backend_catalog
+      - backend_cart
+      - backend_orders
+      - backend_order_history
+    env_file:
+      - ./gateway/docker.env
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile.backend
+
+  backend_users:
+    image: users:latest
+    restart: on-failure
+    depends_on:
+      - db_postgres
+    env_file:
+      - ./users/docker.env
+    build:
+      context: ./users
+      dockerfile: Dockerfile.backend
+
+  backend_catalog:
+    image: catalog:latest
+    restart: on-failure
+    depends_on:
+      - db_mongo
+    env_file:
+      - ./catalog/docker.env
+    build:
+      context: ./catalog
+      dockerfile: Dockerfile.backend
+
+  backend_cart:
+    image: cart:latest
+    restart: on-failure
+    depends_on:
+      - db_mongo
+    env_file:
+      - ./cart/docker.env
+    build:
+      context: ./cart
+      dockerfile: Dockerfile.backend
+  rabbitmq_cart:
+    image: rabbitmq_cart:latest
+    restart: on-failure
+    depends_on:
+      - rabbitmq
+      - db_mongo
+    env_file:
+      - ./cart/docker.env
+    build:
+      context: ./cart
+      dockerfile: Dockerfile.rabbitmq
+
+  backend_orders:
+    image: orders:latest
+    restart: on-failure
+    depends_on:
+      - db_mongo
+    env_file:
+      - ./orders/docker.env
+    build:
+      context: ./orders
+      dockerfile: Dockerfile.backend
+  rabbitmq_orders:
+    image: rabbitmq_orders:latest
+    restart: on-failure
+    depends_on:
+      - rabbitmq
+      - db_mongo
+    env_file:
+      - ./orders/docker.env
+    build:
+      context: ./orders
+      dockerfile: Dockerfile.rabbitmq
+
+  backend_order_history:
+    image: order_history:latest
+    restart: on-failure
+    depends_on:
+      - db_mongo
+    env_file:
+      - ./order_history/docker.env
+    build:
+      context: ./order_history
+      dockerfile: Dockerfile.backend
+  rabbitmq_order_history:
+    image: rabbitmq_order_history:latest
+    restart: on-failure
+    depends_on:
+      - rabbitmq
+      - db_mongo
+    env_file:
+      - ./order_history/docker.env
+    build:
+      context: ./order_history
+      dockerfile: Dockerfile.rabbitmq
+
+  db_postgres:
+    image: postgres:14.5-alpine
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=${USERS_DB_PASSWORD}
+      - POSTGRES_USER=${USERS_DB_USERNAME}
+      - POSTGRES_DB=${USERS_DB_DATABASE}
+    volumes:
+      - db_postgres:/var/lib/postgresql/data
+
+  db_mongo:
+    image: mongo:6.0.2
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${CART_DB_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${CART_DB_PASSWORD}
+    volumes:
+      - db_mongo:/data/db
+
+  rabbitmq:
+    image: rabbitmq:3-management
+
+volumes:
+  pgadmin_config:
+  db_postgres:
+  db_mongo:

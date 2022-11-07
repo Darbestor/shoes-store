@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "users"
+version = "0.1.0"
+description = "Users microservice"
+authors = ["darbestor <fordarbe@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.85.1"
+uvicorn = {extras = ["standard"], version = "^0.19.0"}
+SQLAlchemy = "^1.4.42"
+asyncpg = "^0.26.0"
+alembic = "^1.8.1"
+sqlalchemy2-stubs = "^0.0.2a29"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^0.982"
+pylint = "^2.15.5"
+black = {version = "^22.10.0", allow-prereleases = true}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
