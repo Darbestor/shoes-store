@@ -3,11 +3,13 @@
 # Overview
 **Shoes store** is an example project which demonstrates the use of microservices. Consists of 5 services and gateway written in **FastAPI**.
 
+
+
 # Architecture
 ![Alt text](Architecture_diagram.jpg?raw=true "Architecture")
 
 | Service                          | Description                                                                 |
-| ---------------------------------| ---------------------------------------------------------------------------:|
+| ---------------------------------| :---------------------------------------------------------------------------|
 | [gateway](./gateway)             | Entry point for client. Handles all requests and route to appropriate service. Contains openapi docs gathered from all services. |
 | [users](./users)                 | Registers users and contain information about them in PostgreSQL |
 | [catalog](./catalog)             | Serve as warehouse for store. Management of store products |
