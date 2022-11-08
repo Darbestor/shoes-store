@@ -5,6 +5,8 @@
 
 # Usage
 
+**Project can be started only on \*nix systems because of shell scripts**
+
 ## Run application in **docker compose**
 
 ```./compose.sh up -d --build```
