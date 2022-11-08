@@ -1,7 +1,7 @@
 # Shoes store. Example of microservices in Python
 
 # Overview
-**Shoes store** is an example project which demonstrates the use of microservices. Consists of 5 services and gateway written in **FastAPI**.
+**Shoes store** is an example project which demonstrates the use of microservices. Consists of 6 microservices written in **FastAPI**.
 
 # Usage
 
