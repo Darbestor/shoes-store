@@ -62,6 +62,7 @@ class OpenAPIGatherer:
         openapi_schema = get_openapi(
             title="Shoes store Gateway",
             version="1.0.0",
+            servers=[{"url": "/api"}],
             description="Shoes store API for all services",
             routes=base_app.routes,
         )

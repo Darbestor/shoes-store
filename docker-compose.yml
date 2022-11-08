@@ -124,6 +124,15 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
 
+  nginx:
+    image: shoes_nginx:latest
+    restart: on-failure
+    depends_on:
+      - gateway
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+
 volumes:
   pgadmin_config:
   db_postgres:

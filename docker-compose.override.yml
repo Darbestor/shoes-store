@@ -1,7 +1,7 @@
 services:
   gateway:
     ports:
-      - 9000:8000
+      - 9000:80
 
   backend_users:
     ports:
@@ -57,5 +57,9 @@ services:
     ports:
       - 15672:15672
       - 5672:5672
+
+  nginx:
+    ports:
+      - 90:80
 volumes:
   pgadmin_config:
