@@ -3,7 +3,29 @@
 # Overview
 **Shoes store** is an example project which demonstrates the use of microservices. Consists of 5 services and gateway written in **FastAPI**.
 
+# Usage
 
+## Run application in **docker compose**
+
+```./compose.sh up -d --build```
+
+## Run loccally
+
+### Requirements
+
+- Python 3.10
+- Poetry
+
+**Run commands in service's folder root**
+
+Create virual environment:
+
+```poetry install```
+
+Run command with created virtual env:
+
+``` uvicorn main:app --reload --port "port number" ``` 
+ 
 
 # Architecture
 ![Alt text](Architecture_diagram.jpg?raw=true "Architecture")
